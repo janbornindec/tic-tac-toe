@@ -5,12 +5,12 @@ const Gameboard = (function() {
         board[i] = ' ';
     };
 
-    const addToken = (selectedCell,player) => {
+    const addToken = (selectedCell, player) => {
         const availableCells = board.filter((cell) => cell === ' ');
         if (availableCells.length === 0) {
             return;
         } else {
-            selectedCell = player.getMarker();
+            selectedCell.textContent = player.getMarker();
         };
     };
 
@@ -27,37 +27,51 @@ const Player = (name,marker) => {
     return {getName,getMarker};
 };
 
-const playerOne = Player("Player One", "X");
-const playerTwo = Player("Player Two", "O");
-
-//controller object using module pattern 
+//game logic
 const GameController = (function() {
 
+    const playerOne = Player("Player One", "X");
+    const playerTwo = Player("Player Two", "O");
     let activePlayer = playerOne;
+
     const switchTurn = () => {
         activePlayer = activePlayer === playerOne ? playerTwo : playerOne;
     };
     const getActivePlayer = () => activePlayer;
 
-    return {switchTurn,getActivePlayer};
-    
-})();
-
-//controller object using module pattern 
-const ScreenController = (function() {
-
-    const board = Gameboard.getBoard();
-    //render board
-    for (i in board) {
-        const boardContainer = document.querySelector('#board');
-        const cellButton = document.createElement('button');
-        cellButton.classList.add("cell");
-
-        cellButton.textContent = board[i];
-        boardContainer.appendChild(cellButton);
+    const playRound = (selectedCell) => {
+        Gameboard.addToken(selectedCell, getActivePlayer());
+        console.log(`${activePlayer.getName()} dropped their marker.`);
     };
 
-    return {};
-    
+    return {switchTurn, getActivePlayer, playRound};
+
 })();
 
+//anything that shows on screen, rendering
+const ScreenController = (function() {
+    const boardContainer = document.querySelector('#board');
+
+    const updateScreen = () => {
+
+        boardContainer.textContent = "";
+
+        const board = Gameboard.getBoard();    
+        //render board
+        for (i in board) {
+            const cellButton = document.createElement('button');
+            cellButton.classList.add("cell");
+            cellButton.textContent = board[i];
+            boardContainer.appendChild(cellButton);
+        }; 
+    };
+
+    const buttonHandler = (e) => {
+        const selectedCell = e.target;
+        GameController.playRound(selectedCell);
+        GameController.switchTurn();
+    };
+    
+    boardContainer.addEventListener("click", buttonHandler);
+    updateScreen();
+})();
