@@ -3,10 +3,11 @@ const Gameboard = (function() {
     const board = [];
     for (let i = 0; i < 9; i++) {
         board[i] = '';
-    };
+    };    
+
+    const availableCells = board.filter((cell) => cell === '');
 
     const addToken = (selectedCell, player) => {
-        const availableCells = board.filter((cell) => cell === '');
         if (availableCells.length === 0) {
             return;
         } else {
@@ -52,6 +53,9 @@ const GameController = (function() {
 const ScreenController = (function() {
     const boardContainer = document.querySelector('#board');
     const turnContainer = document.querySelector('#turn');
+    const newGameBtn = document.createElement("button");
+    newGameBtn.classList.add("new");
+    newGameBtn.textContent = "New Game";
 
     const newScreen = () => {
         boardContainer.textContent = "";
@@ -78,16 +82,27 @@ const ScreenController = (function() {
         updateTurn();
     };
 
+    //check if board is full
+    const checkBoard = () => {
+        const disabledBtn = document.querySelectorAll(".disabled");
+        if (disabledBtn.length === 9) {
+            turnContainer.textContent = "";
+            turnContainer.appendChild(newGameBtn);
+        };
+    };
+
     //make the chosen cell unable to click
     const checkCell = (e) => {
         if (e.target.textContent !== "") {
             e.target.disabled = true;
             e.target.classList.add("disabled");
         };
+        checkBoard();
     }
     
     boardContainer.addEventListener("mousemove", checkCell);
     boardContainer.addEventListener("click", buttonHandler);
+    newGameBtn.addEventListener("click", newScreen);
     newScreen();
     updateTurn();
 })();
