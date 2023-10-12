@@ -51,10 +51,11 @@ const GameController = (function() {
 //anything that shows on screen, rendering
 const ScreenController = (function() {
     const boardContainer = document.querySelector('#board');
+    const turnContainer = document.querySelector('#turn');
 
     const updateScreen = () => {
 
-        boardContainer.textContent = "";
+        turnContainer.textContent = "";
 
         const board = Gameboard.getBoard();    
         //render board
@@ -66,12 +67,18 @@ const ScreenController = (function() {
         }; 
     };
 
+    const updateTurn = () => {
+        turnContainer.textContent = `It's ${GameController.getActivePlayer().getName()}'s turn.`;
+    };
+
     const buttonHandler = (e) => {
         const selectedCell = e.target;
         GameController.playRound(selectedCell);
         GameController.switchTurn();
+        updateTurn();
     };
     
     boardContainer.addEventListener("click", buttonHandler);
     updateScreen();
+    updateTurn();
 })();
