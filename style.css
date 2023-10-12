@@ -20,20 +20,27 @@ button {
     border: none;
 }
 
+button:hover {
+    background-color: rgb(81, 81, 81);
+    cursor: pointer;
+    color: white;
+}
+
 .cell {
     background-color: rgb(23, 23, 23);
     color: rgb(242, 242, 242);
     border: 0.5px solid white;
 }
 
-.cell:hover {
-    background-color: rgb(81, 81, 81);
-    cursor: pointer;
-}
-
 .disabled:hover {
     background-color: rgb(23, 23, 23);
     cursor: auto;
+}
+
+.new {
+    width: 10em;
+    height: 2em;
+    color: black;
 }
 
 #turn {
