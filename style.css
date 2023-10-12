@@ -18,6 +18,7 @@ body {
 
 .cell {
     background-color: rgb(23, 23, 23);
+    color: rgb(242, 242, 242);
 }
 
 .cell:hover {
