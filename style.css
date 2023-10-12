@@ -16,14 +16,28 @@ body {
     border: 1px solid white;
 }
 
+button {
+    border: none;
+}
+
 .cell {
     background-color: rgb(23, 23, 23);
     color: rgb(242, 242, 242);
+    border: 0.5px solid white;
 }
 
 .cell:hover {
     background-color: rgb(81, 81, 81);
     cursor: pointer;
+}
+
+.disabled:hover {
+    background-color: rgb(23, 23, 23);
+    cursor: auto;
+}
+
+#turn {
+    padding-bottom: 1em;
 }
 
 #footer {
