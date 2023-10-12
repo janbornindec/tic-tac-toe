@@ -2,11 +2,11 @@
 const Gameboard = (function() {
     const board = [];
     for (let i = 0; i < 9; i++) {
-        board[i] = ' ';
+        board[i] = '';
     };
 
     const addToken = (selectedCell, player) => {
-        const availableCells = board.filter((cell) => cell === ' ');
+        const availableCells = board.filter((cell) => cell === '');
         if (availableCells.length === 0) {
             return;
         } else {
@@ -53,8 +53,8 @@ const ScreenController = (function() {
     const boardContainer = document.querySelector('#board');
     const turnContainer = document.querySelector('#turn');
 
-    const updateScreen = () => {
-
+    const newScreen = () => {
+        boardContainer.textContent = "";
         turnContainer.textContent = "";
 
         const board = Gameboard.getBoard();    
@@ -77,8 +77,17 @@ const ScreenController = (function() {
         GameController.switchTurn();
         updateTurn();
     };
+
+    //make the chosen cell unable to click
+    const checkCell = (e) => {
+        if (e.target.textContent !== "") {
+            e.target.disabled = true;
+            e.target.classList.add("disabled");
+        };
+    }
     
+    boardContainer.addEventListener("mousemove", checkCell);
     boardContainer.addEventListener("click", buttonHandler);
-    updateScreen();
+    newScreen();
     updateTurn();
 })();
