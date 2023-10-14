@@ -1,6 +1,7 @@
 //gameboard object using module pattern
 const Gameboard = (function() {
     const board = [];
+    
     for (let i = 0; i < 9; i++) {
         board[i] = '';
     };    
@@ -12,6 +13,9 @@ const Gameboard = (function() {
             return;
         } else {
             selectedCell.textContent = player.getMarker();
+            board[selectedCell.id] = selectedCell.textContent; //logging marker it into the board object
+            selectedCell.disabled = true; //make the chosen cell unclickable
+            selectedCell.classList.add("disabled"); 
         };
     };
 
@@ -45,7 +49,28 @@ const GameController = (function() {
         console.log(`${activePlayer.getName()} dropped their marker.`);
     };
 
-    return {switchTurn, getActivePlayer, playRound};
+    function checkWin(board) {
+        let winPatterns = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6],
+        ];
+        
+        for (let pattern of winPatterns) {
+            if (board[pattern[0]] == board[pattern[1]] && board[pattern[1]] == board[pattern[2]] && board[pattern[0]] !== "") {
+                return true;
+            };
+        };
+
+        return false;
+    };
+    
+    return {switchTurn, getActivePlayer, playRound, checkWin};
 
 })();
 
@@ -57,18 +82,28 @@ const ScreenController = (function() {
     newGameBtn.classList.add("new");
     newGameBtn.textContent = "New Game";
 
-    const newScreen = () => {
-        boardContainer.textContent = "";
-        turnContainer.textContent = "";
+    const board = Gameboard.getBoard();  
 
-        const board = Gameboard.getBoard();    
-        //render board
+    const renderBtn = () => {
         for (i in board) {
             const cellButton = document.createElement('button');
             cellButton.classList.add("cell");
+            cellButton.setAttribute('id',i)
             cellButton.textContent = board[i];
             boardContainer.appendChild(cellButton);
         }; 
+    };
+    
+    //restart game
+    const newGame = () => {
+        boardContainer.textContent = "";
+        turnContainer.textContent = "";
+        
+        for (let i = 0; i < 9; i++) {
+            board[i] = '';
+        };    
+        renderBtn();
+        updateTurn(); //displays which player's turn when starting a new game
     };
 
     const updateTurn = () => {
@@ -78,6 +113,11 @@ const ScreenController = (function() {
     const buttonHandler = (e) => {
         const selectedCell = e.target;
         GameController.playRound(selectedCell);
+        if (GameController.checkWin(board)) {
+            alert(`${GameController.getActivePlayer().getName()} won!`);
+            newGame();
+        };
+        checkBoard(); //make sure to check if board is full each round
         GameController.switchTurn();
         updateTurn();
     };
@@ -90,19 +130,9 @@ const ScreenController = (function() {
             turnContainer.appendChild(newGameBtn);
         };
     };
-
-    //make the chosen cell unable to click
-    const checkCell = (e) => {
-        if (e.target.textContent !== "") {
-            e.target.disabled = true;
-            e.target.classList.add("disabled");
-        };
-        checkBoard();
-    }
     
-    boardContainer.addEventListener("mousemove", checkCell);
     boardContainer.addEventListener("click", buttonHandler);
-    newGameBtn.addEventListener("click", newScreen);
-    newScreen();
+    newGameBtn.addEventListener("click", newGame);
+    renderBtn();
     updateTurn();
 })();
