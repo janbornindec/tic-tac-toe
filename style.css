@@ -41,6 +41,7 @@ button:hover {
     width: 10em;
     height: 2em;
     color: black;
+    margin-left: 2em;
 }
 
 #turn {
