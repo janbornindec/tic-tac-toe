@@ -36,7 +36,7 @@ const Player = (name,marker) => {
 const GameController = (function() {
 
     const playerOne = Player("Player One", "X");
-    const playerTwo = Player("Player Two", "O");
+    const playerTwo = Player("Computer", "O");
     let activePlayer = playerOne;
 
     const switchTurn = () => {
@@ -81,8 +81,16 @@ const ScreenController = (function() {
     const newGameBtn = document.createElement("button");
     newGameBtn.classList.add("new");
     newGameBtn.textContent = "New Game";
-
+    const startGameBtn = document.querySelector(".start");
     const board = Gameboard.getBoard();  
+
+    //start the game when click the start button
+    const startGame = () => {
+        renderBtn();
+        //show the board
+        boardContainer.style.display = "grid";
+        updateTurn();
+    };
 
     const renderBtn = () => {
         for (i in board) {
@@ -117,9 +125,11 @@ const ScreenController = (function() {
             gameStop();
             return;
         };
-        checkBoard(); //make sure to check if board is full each round
         GameController.switchTurn();
         updateTurn();
+        //make sure to check if board is full each round.
+        //have to be at the end of func so it doesn't get overwritten by other funcs
+        checkBoard(); 
     };
 
     //stop the game once a winner is found
@@ -138,13 +148,12 @@ const ScreenController = (function() {
     const checkBoard = () => {
         const disabledBtn = document.querySelectorAll(".disabled");
         if (disabledBtn.length === 9) {
-            turnContainer.textContent = "";
+            turnContainer.textContent = "It's a tie!";
             turnContainer.appendChild(newGameBtn);
         };
     };
     
     boardContainer.addEventListener("click", buttonHandler);
     newGameBtn.addEventListener("click", newGame);
-    renderBtn();
-    updateTurn();
+    startGameBtn.addEventListener("click", startGame);
 })();
