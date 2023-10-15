@@ -114,12 +114,24 @@ const ScreenController = (function() {
         const selectedCell = e.target;
         GameController.playRound(selectedCell);
         if (GameController.checkWin(board)) {
-            alert(`${GameController.getActivePlayer().getName()} won!`);
-            newGame();
+            gameStop();
+            return;
         };
         checkBoard(); //make sure to check if board is full each round
         GameController.switchTurn();
         updateTurn();
+    };
+
+    //stop the game once a winner is found
+    const gameStop = () => {;
+        const cells = document.querySelectorAll('.cell');
+
+        cells.forEach((cell) => {
+            cell.disabled = true;
+            cell.classList.add("disabled");
+        })
+        turnContainer.textContent = `${GameController.getActivePlayer().getName()} won!`;
+        turnContainer.appendChild(newGameBtn);
     };
 
     //check if board is full
