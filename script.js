@@ -6,17 +6,11 @@ const Gameboard = (function() {
         board[i] = '';
     };    
 
-    const availableCells = board.filter((cell) => cell === '');
-
     const addToken = (selectedCell, player) => {
-        if (availableCells.length === 0) {
-            return;
-        } else {
-            selectedCell.textContent = player.getMarker();
+        selectedCell.textContent = player.getMarker();
             board[selectedCell.id] = selectedCell.textContent; //logging marker it into the board object
             selectedCell.disabled = true; //make the chosen cell unclickable
             selectedCell.classList.add("disabled"); 
-        };
     };
 
     const getBoard = () => board;
@@ -35,13 +29,27 @@ function Player(name,marker) {
 const GameController = (function() {
 
     const playerOne = new Player("Name", "X");
-    const playerTwo = new Player("Computer", "O");
+    const computer = new Player("Computer", "O");
     let activePlayer = playerOne;
+    const availableCells = Gameboard.getBoard().filter(cell => cell === '');
 
     const switchTurn = () => {
-        activePlayer = activePlayer === playerOne ? playerTwo : playerOne;
+        activePlayer = activePlayer === playerOne ? computer : playerOne;
+        if (activePlayer === computer) {
+            compPlay();
+            activePlayer = playerOne;
+        } else {
+            activePlayer = computer;
+        }
     };
     const getActivePlayer = () => activePlayer;
+
+    const compPlay = (selectedCell) => {
+        const cells = document.querySelectorAll(".cell");
+        cellNumber = Math.floor(Math.random() * availableCells.length);
+        selectedCell = cells[cellNumber];
+        playRound(selectedCell);
+    }
 
     const playRound = (selectedCell) => {
         Gameboard.addToken(selectedCell, getActivePlayer());
