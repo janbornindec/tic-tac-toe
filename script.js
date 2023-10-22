@@ -27,15 +27,14 @@ const Gameboard = (function() {
 
 //players object using factory 
 const Player = (name,marker) => {
-    const getName = () => name;
     const getMarker = () => marker;
-    return {getName,getMarker};
+    return {name, getMarker};
 };
 
 //game logic
 const GameController = (function() {
 
-    const playerOne = Player("Player One", "X");
+    let playerOne = Player("Name", "X");
     const playerTwo = Player("Computer", "O");
     let activePlayer = playerOne;
 
@@ -46,7 +45,7 @@ const GameController = (function() {
 
     const playRound = (selectedCell) => {
         Gameboard.addToken(selectedCell, getActivePlayer());
-        console.log(`${activePlayer.getName()} dropped their marker.`);
+        console.log(`${activePlayer.name} dropped their marker.`);
     };
 
     function checkWin(board) {
@@ -70,12 +69,13 @@ const GameController = (function() {
         return false;
     };
     
-    return {switchTurn, getActivePlayer, playRound, checkWin};
+    return {playerOne, switchTurn, getActivePlayer, playRound, checkWin};
 
 })();
 
 //anything that shows on screen, rendering
 const ScreenController = (function() {
+    const gameForm = document.querySelector(".form");
     const boardContainer = document.querySelector('#board');
     const turnContainer = document.querySelector('#turn');
     const newGameBtn = document.createElement("button");
@@ -86,10 +86,19 @@ const ScreenController = (function() {
 
     //start the game when click the start button
     const startGame = () => {
+        GameController.playerOne.name = document.getElementById("name").value;
         renderBtn();
+        toggleForm();
         //show the board
         boardContainer.style.display = "grid";
         updateTurn();
+    };
+
+    let turnCount = 0;
+    let formOn = true;
+
+    const toggleForm = () => {
+        formOn = formOn === true ? gameForm.style.display = "none" : gameForm.style.display = "block";
     };
 
     const renderBtn = () => {
@@ -106,6 +115,7 @@ const ScreenController = (function() {
     const newGame = () => {
         boardContainer.textContent = "";
         turnContainer.textContent = "";
+        GameController.logCount = 0;
         
         for (let i = 0; i < 9; i++) {
             board[i] = '';
@@ -115,12 +125,13 @@ const ScreenController = (function() {
     };
 
     const updateTurn = () => {
-        turnContainer.textContent = `It's ${GameController.getActivePlayer().getName()}'s turn.`;
+        turnContainer.textContent = `It's ${GameController.getActivePlayer().name}'s turn.`;
     };
 
     const buttonHandler = (e) => {
         const selectedCell = e.target;
         GameController.playRound(selectedCell);
+        turnCount += 1;
         if (GameController.checkWin(board)) {
             gameStop();
             return;
@@ -140,7 +151,7 @@ const ScreenController = (function() {
             cell.disabled = true;
             cell.classList.add("disabled");
         })
-        turnContainer.textContent = `${GameController.getActivePlayer().getName()} won!`;
+        turnContainer.textContent = `${GameController.getActivePlayer().name} won in ${turnCount} turns!`;
         turnContainer.appendChild(newGameBtn);
     };
 
@@ -152,7 +163,7 @@ const ScreenController = (function() {
             turnContainer.appendChild(newGameBtn);
         };
     };
-    
+
     boardContainer.addEventListener("click", buttonHandler);
     newGameBtn.addEventListener("click", newGame);
     startGameBtn.addEventListener("click", startGame);
