@@ -12,8 +12,14 @@
         <h1>Tic Tac Toe</h1>
     </header>
     <main>
+        <div class="form" onsubmit="return false;">
+            Are you ready to play a game of Tic Tac Toe against the computer?</p>
+            <label for="name">Your name:</label>
+            <input type="text" id="name" name="name">
+            <br><br>
+            <button type="submit" class="start">Start Game</button>
+        </div>
         <div id ="turn">
-            <button class="start">Start Game</button>
         </div>
         <div id="board">
         </div>
