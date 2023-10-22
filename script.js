@@ -25,17 +25,17 @@ const Gameboard = (function() {
 
 })();
 
-//players object using factory 
-const Player = (name,marker) => {
-    const getMarker = () => marker;
-    return {name, getMarker};
+//players object constructor
+function Player(name,marker) {
+    this.name = name;
+    this.getMarker = () => marker;
 };
 
 //game logic
 const GameController = (function() {
 
-    let playerOne = Player("Name", "X");
-    const playerTwo = Player("Computer", "O");
+    const playerOne = new Player("Name", "X");
+    const playerTwo = new Player("Computer", "O");
     let activePlayer = playerOne;
 
     const switchTurn = () => {
