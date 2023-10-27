@@ -31,7 +31,6 @@ const GameController = (function() {
     const playerOne = new Player("Name", "X");
     const computer = new Player("Computer", "O");
     let activePlayer = playerOne;
-    const availableCells = Gameboard.getBoard().filter(cell => cell === '');
 
     const switchTurn = () => {
         activePlayer = activePlayer === playerOne ? computer : playerOne;
@@ -45,9 +44,9 @@ const GameController = (function() {
     const getActivePlayer = () => activePlayer;
 
     const compPlay = (selectedCell) => {
-        const cells = document.querySelectorAll(".cell");
+        const availableCells = document.querySelectorAll(".cell:not(.disabled)") //using not selector
         cellNumber = Math.floor(Math.random() * availableCells.length);
-        selectedCell = cells[cellNumber];
+        selectedCell = availableCells[cellNumber];
         playRound(selectedCell);
     }
 
