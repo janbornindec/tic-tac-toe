@@ -8,9 +8,9 @@ const Gameboard = (function() {
 
     const addToken = (selectedCell, player) => {
         selectedCell.textContent = player.getMarker();
-            board[selectedCell.id] = selectedCell.textContent; //logging marker it into the board object
-            selectedCell.disabled = true; //make the chosen cell unclickable
-            selectedCell.classList.add("disabled"); 
+        board[selectedCell.id] = selectedCell.textContent; //logging marker it into the board object
+        selectedCell.disabled = true; //make the chosen cell unclickable
+        selectedCell.classList.add("disabled"); 
     };
 
     const getBoard = () => board;
@@ -32,27 +32,50 @@ const GameController = (function() {
     const computer = new Player("Computer", "O");
     let activePlayer = playerOne;
 
+    const getActivePlayer = () => activePlayer;
+
     const switchTurn = () => {
         activePlayer = activePlayer === playerOne ? computer : playerOne;
         if (activePlayer === computer) {
             compPlay();
-            activePlayer = playerOne;
-        } else {
-            activePlayer = computer;
         }
+        return activePlayer;
     };
-    const getActivePlayer = () => activePlayer;
 
     const compPlay = (selectedCell) => {
         const availableCells = document.querySelectorAll(".cell:not(.disabled)") //using not selector
         cellNumber = Math.floor(Math.random() * availableCells.length);
         selectedCell = availableCells[cellNumber];
-        playRound(selectedCell);
+        setTimeout(()=> {
+            playRound(selectedCell);
+        }, 1000);
     }
 
     const playRound = (selectedCell) => {
         Gameboard.addToken(selectedCell, getActivePlayer());
-        console.log(`${activePlayer.name} dropped their marker.`);
+        console.log(`${activePlayer.name} dropped their marker on ${selectedCell.id}.`);
+        if (checkWin(Gameboard.getBoard())) {
+            ScreenController.announceResult(`${activePlayer.name} won!`);
+            gameStop();
+            return;
+        } 
+        if (Gameboard.getBoard().filter((cell)=>cell==="").length === 0) {
+            ScreenController.announceResult("It's a tie!");
+            gameStop();
+            return;
+        }
+        switchTurn();
+        ScreenController.updateTurn();
+    };
+
+    //stop the game once a winner is found
+    const gameStop = () => {
+        const cells = document.querySelectorAll('.cell');
+        cells.forEach((cell) => {
+            cell.disabled = true;
+            cell.classList.add("disabled");
+        })
+        activePlayer = playerOne;
     };
 
     function checkWin(board) {
@@ -76,7 +99,7 @@ const GameController = (function() {
         return false;
     };
     
-    return {playerOne, switchTurn, getActivePlayer, playRound, checkWin};
+    return {playerOne, switchTurn, getActivePlayer, playRound, compPlay, checkWin};
 
 })();
 
@@ -101,7 +124,6 @@ const ScreenController = (function() {
         updateTurn();
     };
 
-    let turnCount = 0;
     let formOn = true;
 
     const toggleForm = () => {
@@ -122,8 +144,6 @@ const ScreenController = (function() {
     const newGame = () => {
         boardContainer.textContent = "";
         turnContainer.textContent = "";
-        GameController.logCount = 0;
-        
         for (let i = 0; i < 9; i++) {
             board[i] = '';
         };    
@@ -138,40 +158,17 @@ const ScreenController = (function() {
     const buttonHandler = (e) => {
         const selectedCell = e.target;
         GameController.playRound(selectedCell);
-        turnCount += 1;
-        if (GameController.checkWin(board)) {
-            gameStop();
-            return;
-        };
-        GameController.switchTurn();
-        updateTurn();
-        //make sure to check if board is full each round.
-        //have to be at the end of func so it doesn't get overwritten by other funcs
-        checkBoard(); 
     };
 
-    //stop the game once a winner is found
-    const gameStop = () => {;
-        const cells = document.querySelectorAll('.cell');
-
-        cells.forEach((cell) => {
-            cell.disabled = true;
-            cell.classList.add("disabled");
-        })
-        turnContainer.textContent = `${GameController.getActivePlayer().name} won in ${turnCount} turns!`;
+    const announceResult = (message) => {
+        turnContainer.textContent = message;
         turnContainer.appendChild(newGameBtn);
-    };
-
-    //check if board is full
-    const checkBoard = () => {
-        const disabledBtn = document.querySelectorAll(".disabled");
-        if (disabledBtn.length === 9) {
-            turnContainer.textContent = "It's a tie!";
-            turnContainer.appendChild(newGameBtn);
-        };
-    };
+    }
+    
 
     boardContainer.addEventListener("click", buttonHandler);
     newGameBtn.addEventListener("click", newGame);
     startGameBtn.addEventListener("click", startGame);
+
+    return {updateTurn, announceResult}
 })();
