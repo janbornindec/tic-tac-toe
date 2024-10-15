@@ -10,12 +10,4 @@ Objectives:
 - Use factories if need multiples of something (players).
 
 ---
-
-What have I learned:
-- 
-
-Main problems I encountered:
-- 
-
-How I overcame the problems:
-- 
+https://janbornindec.github.io/tic-tac-toe/
